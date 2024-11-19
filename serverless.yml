@@ -1,0 +1,45 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: elliecrome
+# "app" enables Serverless Framework Dashboard features and sharing them with other Services.
+app: ecom-infrastructure
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: ecom-infrastructure
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+
+# functions:
+#   hello:
+#     handler: handler.hello
+#     events:
+#       - httpApi:
+#           path: /
+#           method: get
+
+resources:
+  Resources:
+    ecomWebSsg:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ecom-web-ssg
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: false
+          BlockPublicPolicy: false
+          IgnorePublicAcls: false
+          RestrictPublicBuckets: false
+        WebsiteConfiguration:
+          IndexDocument: index.html
+    publicReadBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: ecom-web-ssg
+        PolicyDocument:
+          Statement:
+            Sid: PublicReadGetObject
+            Effect: Allow
+            Principal: "*"
+            Action:
+              - s3:GetObject
+            Resource:
+              - arn:aws:s3:::ecom-web-ssg/*
